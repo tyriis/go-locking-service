@@ -20,5 +20,6 @@ tasks:
       - printenv | grep PATH
 
 includes:
+  install: .taskfiles/install/Taskfile.yaml
   lint: .taskfiles/lint/Taskfile.yaml
   run: .taskfiles/run/Taskfile.yaml

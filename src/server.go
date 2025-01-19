@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func server() {
-	fmt.Printf("Server is running on http://localhost:%s\n", PORT)
-	http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil)
+func server(config *Config) {
+	fmt.Printf("Server is running on http://localhost:%s\n", config.API.Port)
+	http.ListenAndServe(fmt.Sprintf(":%s", config.API.Port), nil)
 }
