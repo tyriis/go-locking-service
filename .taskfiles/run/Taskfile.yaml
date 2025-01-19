@@ -1,0 +1,9 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/taskfile.json
+version: "3"
+
+tasks:
+  default:
+    desc: Run the application
+    cmds:
+      - "go run {{.SOURCE_DIR}}/*.go"

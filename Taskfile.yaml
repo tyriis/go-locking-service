@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/taskfile.json
+version: "3"
+
+env:
+  PATH:
+    sh: 'echo "$PATH:$(go env GOPATH)/bin"'
+
+vars:
+  PROJECT_DIR: "{{.ROOT_DIR}}"
+  SOURCE_DIR: "{{.PROJECT_DIR}}/src"
+
+tasks:
+  default:
+    cmd: task --list
+    silent: true
+  test:
+    desc: Run tests
+    cmds:
+      - printenv | grep PATH
+
+includes:
+  lint: .taskfiles/lint/Taskfile.yaml
+  run: .taskfiles/run/Taskfile.yaml

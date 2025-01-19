@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/taskfile.json
+version: "3"
+
+tasks:
+  default:
+    desc: Run gocritic checks
+    silent: true
+    cmds:
+      - |
+        gocritic check -enableAll \
+          $(go list {{.SOURCE_DIR}} | grep -v /vendor/) \
+          2>/dev/null || (echo "► gocritic found issues" && exit 1)
