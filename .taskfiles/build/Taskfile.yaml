@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/taskfile.json
+version: "3"
+
+tasks:
+  default:
+    desc: Build the application
+    dir: '{{.PROJECT_DIR}}'
+    env:
+      LOG_FORMAT: console
+      LOG_LEVEL: debug
+    cmds:
+      - mkdir -p {{.BUILD_DIR}}
+      - "go build -o {{.BUILD_DIR}} {{.SOURCE_DIR}}/*.go"

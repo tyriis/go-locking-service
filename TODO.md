@@ -2,5 +2,6 @@
 
 - [ ] fix linting (tabs/spaces)
 - [ ] add project linters, yaml, md, ...
-- [ ] configure logger
-- [ ] configure config loader from yaml
+- [x] configure logger
+- [x] configure config loader from yaml
+- [ ] add env substitution to yamml loader

@@ -22,28 +22,6 @@
         }
       },
       "additionalProperties": false
-    },
-    "test": {
-      "type": "object",
-      "required": ["keys"],
-      "properties": {
-        "keys": {
-          "type": "object",
-          "required": ["abc"],
-          "properties": {
-            "abc": {
-              "type": "integer",
-              "description": "Test value abc"
-            },
-            "cde": {
-              "type": "string",
-              "description": "Test value cde"
-            }
-          },
-          "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
     }
   },
   "additionalProperties": false

@@ -1,11 +1,7 @@
 ---
+
 api:
   type: rest
   port: 8080
-
-test:
-  keys:
-    abc: 123
-    cde: "223"
 
 # This is a comment

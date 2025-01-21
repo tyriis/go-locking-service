@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func initLogger() {
+func InitLogger() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	format := os.Getenv("LOG_FORMAT")
 	switch format {
@@ -17,7 +17,7 @@ func initLogger() {
 		log.Logger = log.Output(zerolog.ConsoleWriter{
 			Out:        os.Stdout,
 			TimeFormat: time.RFC3339,
-		}).With().Timestamp().Logger()
+		}).With().Timestamp().Stack().Logger()
 		log.Debug().Msg("LOG_FORMAT is set to CONSOLE")
 	case "json":
 		// JSON logging

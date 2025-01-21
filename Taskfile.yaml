@@ -9,6 +9,7 @@ env:
 vars:
   PROJECT_DIR: "{{.ROOT_DIR}}"
   SOURCE_DIR: "{{.PROJECT_DIR}}/src"
+  BUILD_DIR: "{{.PROJECT_DIR}}/bin"
 
 tasks:
   default:
@@ -20,6 +21,7 @@ tasks:
       - printenv | grep PATH
 
 includes:
+  build: .taskfiles/build/Taskfile.yaml
   install: .taskfiles/install/Taskfile.yaml
   lint: .taskfiles/lint/Taskfile.yaml
   run: .taskfiles/run/Taskfile.yaml
