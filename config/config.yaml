@@ -1,7 +1,8 @@
 ---
-
 api:
-  type: rest
   port: 8080
 
-# This is a comment
+redis:
+  host: localhost
+  port: 6379
+  keyPrefix: test

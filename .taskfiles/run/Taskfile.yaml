@@ -9,4 +9,5 @@ tasks:
       LOG_FORMAT: console
       LOG_LEVEL: debug
     cmds:
-      - "go run {{.SOURCE_DIR}}/*.go"
+      # - "go run {{.SOURCE_DIR}}/*.go"
+      - "go run {{.PROJECT_DIR}}/cmd/app/main.go"
