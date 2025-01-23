@@ -19,5 +19,8 @@
 
 !Taskfile.yaml
 
+!.editorconfig
+!assets/**
+
 # ...even if they are in subdirectories
 !*/
