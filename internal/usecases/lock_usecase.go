@@ -63,7 +63,7 @@ func (uc *LockUseCase) CreateLock(lockInput *domain.LockInput) (*domain.Lock, er
 		const msg = "LockUseCase.CreateLock - uc.lockRepo.Set > %s"
 		return nil, &domain.InternalError{Message: fmt.Sprintf(msg, err.Error())}
 	}
-	const msg = "LockUseCase.CreateLock - Lock created: %s"
+	const msg = "LockUseCase.CreateLock - Lock created > %s"
 	uc.logger.Info(fmt.Sprintf(msg, lockInput.Key))
 	uc.logger.Debug("LockUseCase.CreateLock - END")
 	return result, nil

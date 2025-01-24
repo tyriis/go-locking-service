@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/tyriis/rest-go/internal/delivery"
@@ -40,5 +44,28 @@ func main() {
 	r.HandleFunc("/api/v1/locks/{key}", webserviceHandler.ShowOneLock).Methods("GET")
 	r.HandleFunc("/api/v1/locks", webserviceHandler.ShowAllLocks).Methods("GET")
 	log.Printf("Server is running on port %s", config.Api.Port)
-	http.ListenAndServe(fmt.Sprintf(":%s", config.Api.Port), r)
+
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", config.Api.Port),
+		Handler: r,
+	}
+
+	// Graceful shutdown
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	// Wait for interrupt signal
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+
+	// Shutdown with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server forced to shutdown:", err)
+	}
 }

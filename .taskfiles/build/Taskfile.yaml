@@ -11,4 +11,5 @@ tasks:
       LOG_LEVEL: debug
     cmds:
       - mkdir -p {{.BUILD_DIR}}
-      - "go build -o {{.BUILD_DIR}} {{.SOURCE_DIR}}/*.go"
+      # - "go build -o {{.BUILD_DIR}} {{.SOURCE_DIR}}/*.go"
+      - "go build -o {{.BUILD_DIR}} {{.PROJECT_DIR}}/cmd/app/main.go"
