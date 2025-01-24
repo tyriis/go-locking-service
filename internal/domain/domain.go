@@ -38,7 +38,7 @@ type LockError struct {
 }
 
 type LockRepository interface {
-	Get(key string) (*Lock, error)
+	Get(key string) ([]*Lock, error)
 	Set(key string, value string, ttl time.Duration) (*Lock, error)
 	Del(key string) error
 }

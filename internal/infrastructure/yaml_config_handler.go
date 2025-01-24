@@ -13,7 +13,7 @@ import (
 type Config struct {
 	Redis struct {
 		Host   string `yaml:"host"`
-		Port   string `yaml:"path"`
+		Port   string `yaml:"port"`
 		Prefix string `yaml:"keyPrefix"`
 	} `yaml:"redis"`
 	Api struct {

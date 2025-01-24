@@ -6,14 +6,19 @@ import (
 	"os"
 
 	"github.com/santhosh-tekuri/jsonschema/v6"
+	"github.com/tyriis/rest-go/internal/domain"
 )
 
 type JSONSchemaValidator struct {
 	schemaPath string
+	logger     domain.Logger
 }
 
-func NewJSONSchemaValidator(schemaPath string) *JSONSchemaValidator {
-	return &JSONSchemaValidator{schemaPath: schemaPath}
+func NewJSONSchemaValidator(schemaPath string, logger domain.Logger) *JSONSchemaValidator {
+	return &JSONSchemaValidator{
+		schemaPath: schemaPath,
+		logger:     logger,
+	}
 }
 
 func (v *JSONSchemaValidator) Validate(data interface{}) error {

@@ -34,3 +34,19 @@ func NewLogger() *Logger {
 	}
 	return &Logger{logger: log.Logger}
 }
+
+func (l *Logger) Debug(msg string) {
+	l.logger.Debug().Msg(msg)
+}
+
+func (l *Logger) Info(msg string) {
+	l.logger.Info().Msg(msg)
+}
+
+func (l *Logger) Warn(msg string) {
+	l.logger.Warn().Msg(msg)
+}
+
+func (l *Logger) Error(msg string) {
+	l.logger.Error().Msg(msg)
+}

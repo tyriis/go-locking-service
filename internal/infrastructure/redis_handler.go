@@ -2,34 +2,84 @@ package infrastructure
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/tyriis/rest-go/internal/domain"
 )
 
 type RedisHandler struct {
 	client *redis.Client
 	ctx    context.Context
+	logger domain.Logger
+	config Config
 }
 
-func NewRedisHandler(addr string) *RedisHandler {
+func NewRedisHandler(config Config, logger domain.Logger) *RedisHandler {
+	redisJSON, err := json.Marshal(config.Redis)
+	if err == nil {
+		const msg = "NewRedisHandler - json.Marshal > config.Redis > %s"
+		logger.Debug(fmt.Sprintf(msg, string(redisJSON)))
+	}
 	client := redis.NewClient(&redis.Options{
-		Addr: addr,
+		Addr: config.Redis.Host + ":" + config.Redis.Port,
 	})
 	return &RedisHandler{
 		client: client,
 		ctx:    context.Background(),
+		logger: logger,
+		config: config,
 	}
 }
 
 func (h *RedisHandler) Set(key string, value string, ttl time.Duration) error {
-	return h.client.Set(h.ctx, key, value, ttl).Err()
+	return h.client.Set(h.ctx, h.config.Redis.Prefix+key, value, ttl).Err()
 }
 
-func (h *RedisHandler) Get(key string) (string, error) {
-	return h.client.Get(h.ctx, key).Result()
+func (h *RedisHandler) Get(key string) ([]string, error) {
+	if key == "*" {
+		// Get all keys with prefix
+		keys := h.client.Keys(h.ctx, h.config.Redis.Prefix+"*").Val()
+		if len(keys) == 0 {
+			return []string{}, nil
+		}
+
+		// Get all values
+		values, err := h.GetMultiple(keys)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get multiple keys: %w", err)
+		}
+		return values, nil
+	}
+	val, err := h.client.Get(h.ctx, h.config.Redis.Prefix+key).Result()
+	if err != nil {
+		return nil, err
+	}
+	return []string{val}, nil
 }
 
 func (h *RedisHandler) Del(key string) error {
-	return h.client.Del(h.ctx, key).Err()
+	return h.client.Del(h.ctx, h.config.Redis.Prefix+key).Err()
+}
+
+func (h *RedisHandler) GetMultiple(keys []string) ([]string, error) {
+	h.logger.Debug(fmt.Sprintf("RedisHandler.GetMultiple - keys: %v", keys))
+	// Fetch multiple keys in one call
+	results, err := h.client.MGet(h.ctx, keys...).Result()
+	if err != nil {
+		return nil, fmt.Errorf("RedisHandler.GetMultiple - MGet failed: %w", err)
+	}
+
+	// Convert interface{} slice to string slice
+	values := make([]string, 0, len(results))
+	for _, result := range results {
+		if result != nil {
+			values = append(values, result.(string))
+		}
+	}
+
+	h.logger.Debug(fmt.Sprintf("RedisHandler.GetMultiple - values: %v", values))
+	return values, nil
 }
