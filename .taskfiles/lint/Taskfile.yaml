@@ -9,5 +9,5 @@ tasks:
     cmds:
       - |
         gocritic check -enableAll \
-          $(go list {{.SOURCE_DIR}} | grep -v /vendor/) \
+          $(go list {{.PROJECT_DIR}} | grep -v /vendor/) \
           2>/dev/null || (echo "► gocritic found issues" && exit 1)
