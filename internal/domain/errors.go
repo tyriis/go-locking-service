@@ -30,3 +30,32 @@ type InternalError struct {
 func (e *InternalError) Error() string {
 	return "internal server error: " + e.Message
 }
+
+// APIResponse represents a standardized API response
+type APIResponse struct {
+	Data  interface{} `json:"data,omitempty"`
+	Error *APIError   `json:"error,omitempty"`
+}
+
+// APIError represents a standardized error structure
+type APIError struct {
+	Message string `json:"message"`
+	Status  int    `json:"status"`
+}
+
+// NewErrorResponse creates a new API error response
+func NewErrorResponse(status int, message string) *APIResponse {
+	return &APIResponse{
+		Error: &APIError{
+			Message: message,
+			Status:  status,
+		},
+	}
+}
+
+// NewSuccessResponse creates a new API success response
+func NewSuccessResponse(data interface{}) *APIResponse {
+	return &APIResponse{
+		Data: data,
+	}
+}

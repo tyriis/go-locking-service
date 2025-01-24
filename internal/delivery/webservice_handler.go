@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/rs/zerolog/log"
 	"github.com/tyriis/rest-go/internal/domain"
 	"github.com/tyriis/rest-go/internal/usecases"
 )
@@ -26,53 +25,57 @@ func NewWebserviceHandler(lockUseCase *usecases.LockUseCase, logger domain.Logge
 }
 
 // respondWithJSON writes a JSON response with proper indentation.
-func (h WebserviceHandler) respondWithJSON(res http.ResponseWriter, data interface{}) {
+func (h WebserviceHandler) respondWithJSON(res http.ResponseWriter, status int, payload interface{}) {
 	res.Header().Set("Content-Type", "application/json")
+	res.WriteHeader(status)
 	encoder := json.NewEncoder(res)
 	encoder.SetIndent("", "  ")
-	encoder.Encode(data)
+	encoder.Encode(payload)
+}
+
+// respondWithError writes a JSON error response
+func (h WebserviceHandler) respondWithError(res http.ResponseWriter, status int, message string) {
+	h.respondWithJSON(res, status, domain.NewErrorResponse(status, message).Error)
 }
 
 /**
  * CreateLock handles POST requests to create a new lock.
  */
 func (h WebserviceHandler) CreateLock(res http.ResponseWriter, req *http.Request) {
-	// Check if the request body is a valid JSON structure
 	h.logger.Debug("WebserviceHandler.CreateLock - START")
 	var input domain.LockInput
 	if err := json.NewDecoder(req.Body).Decode(&input); err != nil {
-		log.Error().Err(err).Msg(err.Error())
-		http.Error(res, err.Error(), http.StatusBadRequest)
+		h.logger.Error(err.Error())
+		h.respondWithError(res, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	// Validate the input
 	if err := domain.ValidateLockInput(&input); err != nil {
 		h.logger.Error(err.Error())
-		http.Error(res, err.Error(), http.StatusBadRequest)
+		switch e := err.(type) {
+		case *domain.InputError:
+			h.respondWithError(res, http.StatusBadRequest, e.Error())
+		default:
+			h.respondWithError(res, http.StatusInternalServerError, "An unexpected error occurred")
+		}
 		return
 	}
 
 	lock, err := h.LockUseCase.CreateLock(&input)
 	if err != nil {
+		h.logger.Error(err.Error())
 		switch e := err.(type) {
 		case *domain.LockConflictError:
-			h.logger.Error(e.Error())
-			http.Error(res, e.Error(), http.StatusConflict)
-		case *domain.InternalError:
-			h.logger.Error(e.Error())
-			http.Error(res, e.Error(), http.StatusInternalServerError)
+			h.respondWithError(res, http.StatusConflict, "lock already exists!")
 		case *domain.InputError:
-			h.logger.Error(e.Error())
-			http.Error(res, e.Error(), http.StatusBadRequest)
+			h.respondWithError(res, http.StatusBadRequest, e.Error())
 		default:
-			h.logger.Error(err.Error())
-			http.Error(res, "unexpected error", http.StatusInternalServerError)
+			h.respondWithError(res, http.StatusInternalServerError, "An unexpected error occurred")
 		}
 		return
 	}
 
-	h.respondWithJSON(res, lock)
+	h.respondWithJSON(res, http.StatusCreated, domain.NewSuccessResponse(lock).Data)
 	h.logger.Debug("WebserviceHandler.CreateLock - END")
 }
 
@@ -86,11 +89,11 @@ func (h WebserviceHandler) DeleteLock(res http.ResponseWriter, req *http.Request
 
 	if err := h.LockUseCase.DeleteLock(key); err != nil {
 		h.logger.Error(err.Error())
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+		h.respondWithError(res, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	res.WriteHeader(http.StatusNoContent)
+	h.respondWithJSON(res, http.StatusOK, domain.NewSuccessResponse(nil).Data)
 	h.logger.Debug("WebserviceHandler.DeleteLock - END")
 }
 
@@ -104,11 +107,11 @@ func (h WebserviceHandler) ShowOneLock(res http.ResponseWriter, req *http.Reques
 	lock, err := h.LockUseCase.GetLock(&key)
 	if err != nil {
 		h.logger.Error(err.Error())
-		http.Error(res, err.Error(), http.StatusNotFound)
+		h.respondWithError(res, http.StatusNotFound, err.Error())
 		return
 	}
 
-	h.respondWithJSON(res, lock)
+	h.respondWithJSON(res, http.StatusOK, domain.NewSuccessResponse(lock).Data)
 	h.logger.Debug("WebserviceHandler.ShowOneLock - END")
 }
 
@@ -120,10 +123,10 @@ func (h WebserviceHandler) ShowAllLocks(res http.ResponseWriter, req *http.Reque
 	locks, err := h.LockUseCase.ListLocks()
 	if err != nil {
 		h.logger.Error(err.Error())
-		http.Error(res, err.Error(), http.StatusNotFound)
+		h.respondWithError(res, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	h.respondWithJSON(res, locks)
+	h.respondWithJSON(res, http.StatusOK, domain.NewSuccessResponse(locks).Data)
 	h.logger.Debug("WebserviceHandler.ShowAllLocks - END")
 }
