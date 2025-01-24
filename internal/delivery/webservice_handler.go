@@ -45,33 +45,18 @@ func (h WebserviceHandler) CreateLock(res http.ResponseWriter, req *http.Request
 	h.logger.Debug("WebserviceHandler.CreateLock - START")
 	var input domain.LockInput
 	if err := json.NewDecoder(req.Body).Decode(&input); err != nil {
-		h.logger.Error(err.Error())
-		h.respondWithError(res, http.StatusBadRequest, err.Error())
+		h.handleError(res, err)
 		return
 	}
 
 	if err := domain.ValidateLockInput(&input); err != nil {
-		h.logger.Error(err.Error())
-		switch e := err.(type) {
-		case *domain.InputError:
-			h.respondWithError(res, http.StatusBadRequest, e.Error())
-		default:
-			h.respondWithError(res, http.StatusInternalServerError, "An unexpected error occurred")
-		}
+		h.handleError(res, err)
 		return
 	}
 
 	lock, err := h.LockUseCase.CreateLock(&input)
 	if err != nil {
-		h.logger.Error(err.Error())
-		switch e := err.(type) {
-		case *domain.LockConflictError:
-			h.respondWithError(res, http.StatusConflict, "lock already exists!")
-		case *domain.InputError:
-			h.respondWithError(res, http.StatusBadRequest, e.Error())
-		default:
-			h.respondWithError(res, http.StatusInternalServerError, "An unexpected error occurred")
-		}
+		h.handleError(res, err)
 		return
 	}
 
@@ -88,8 +73,7 @@ func (h WebserviceHandler) DeleteLock(res http.ResponseWriter, req *http.Request
 	key := vars["key"]
 
 	if err := h.LockUseCase.DeleteLock(key); err != nil {
-		h.logger.Error(err.Error())
-		h.respondWithError(res, http.StatusInternalServerError, err.Error())
+		h.handleError(res, err)
 		return
 	}
 
@@ -106,8 +90,7 @@ func (h WebserviceHandler) ShowOneLock(res http.ResponseWriter, req *http.Reques
 	key := vars["key"]
 	lock, err := h.LockUseCase.GetLock(&key)
 	if err != nil {
-		h.logger.Error(err.Error())
-		h.respondWithError(res, http.StatusNotFound, err.Error())
+		h.handleError(res, err)
 		return
 	}
 
@@ -122,11 +105,24 @@ func (h WebserviceHandler) ShowAllLocks(res http.ResponseWriter, req *http.Reque
 	h.logger.Debug("WebserviceHandler.ShowAllLocks - START")
 	locks, err := h.LockUseCase.ListLocks()
 	if err != nil {
-		h.logger.Error(err.Error())
-		h.respondWithError(res, http.StatusInternalServerError, err.Error())
+		h.handleError(res, err)
 		return
 	}
 
 	h.respondWithJSON(res, http.StatusOK, domain.NewSuccessResponse(locks).Data)
 	h.logger.Debug("WebserviceHandler.ShowAllLocks - END")
+}
+
+func (h WebserviceHandler) handleError(res http.ResponseWriter, err error) {
+	h.logger.Error(err.Error())
+	switch e := err.(type) {
+	case *domain.LockConflictError:
+		h.respondWithError(res, http.StatusConflict, "lock already exists!")
+	case *domain.NotFoundError:
+		h.respondWithError(res, http.StatusNotFound, "not found")
+	case *domain.InputError:
+		h.respondWithError(res, http.StatusBadRequest, e.Error())
+	default:
+		h.respondWithError(res, http.StatusInternalServerError, "An unexpected error occurred")
+	}
 }

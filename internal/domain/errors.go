@@ -12,6 +12,16 @@ func (e *InputError) Error() string {
 	return msg
 }
 
+// NotFoundError represents an error when the resource is not found
+type NotFoundError struct {
+	Message string
+}
+
+func (e *NotFoundError) Error() string {
+	msg := fmt.Sprintf("%s not found!", e.Message)
+	return msg
+}
+
 // LockConflictError represents an error when a lock already exists
 type LockConflictError struct {
 	Message string
