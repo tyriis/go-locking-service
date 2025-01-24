@@ -1,3 +1,4 @@
+// Package delivery implements the HTTP handlers for the REST API.
 package delivery
 
 import (
@@ -10,11 +11,13 @@ import (
 	"github.com/tyriis/rest-go/internal/usecases"
 )
 
+// WebserviceHandler handles HTTP requests for the lock management API.
 type WebserviceHandler struct {
 	LockUseCase *usecases.LockUseCase
 	logger      domain.Logger
 }
 
+// NewWebserviceHandler creates a new WebserviceHandler with the given use case and logger.
 func NewWebserviceHandler(lockUseCase *usecases.LockUseCase, logger domain.Logger) *WebserviceHandler {
 	return &WebserviceHandler{
 		LockUseCase: lockUseCase,
@@ -22,6 +25,7 @@ func NewWebserviceHandler(lockUseCase *usecases.LockUseCase, logger domain.Logge
 	}
 }
 
+// respondWithJSON writes a JSON response with proper indentation.
 func (h WebserviceHandler) respondWithJSON(res http.ResponseWriter, data interface{}) {
 	res.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(res)
@@ -30,7 +34,7 @@ func (h WebserviceHandler) respondWithJSON(res http.ResponseWriter, data interfa
 }
 
 /**
- * CreateLock creates a lock if not exists
+ * CreateLock handles POST requests to create a new lock.
  */
 func (h WebserviceHandler) CreateLock(res http.ResponseWriter, req *http.Request) {
 	// Check if the request body is a valid JSON structure
@@ -62,7 +66,7 @@ func (h WebserviceHandler) CreateLock(res http.ResponseWriter, req *http.Request
 }
 
 /**
- * DeleteLock deletes a lock if exists
+ * DeleteLock handles DELETE requests to remove an existing lock.
  */
 func (h WebserviceHandler) DeleteLock(res http.ResponseWriter, req *http.Request) {
 	h.logger.Debug("WebserviceHandler.DeleteLock - START")
@@ -80,7 +84,7 @@ func (h WebserviceHandler) DeleteLock(res http.ResponseWriter, req *http.Request
 }
 
 /**
- * ShowOneLock returns a single lock if exists
+ * ShowOneLock handles GET requests to retrieve a specific lock.
  */
 func (h WebserviceHandler) ShowOneLock(res http.ResponseWriter, req *http.Request) {
 	h.logger.Debug("WebserviceHandler.ShowOneLock - START")
@@ -98,7 +102,7 @@ func (h WebserviceHandler) ShowOneLock(res http.ResponseWriter, req *http.Reques
 }
 
 /**
- * ShowAllLocks returns all locks
+ * ShowAllLocks handles GET requests to retrieve all locks.
  */
 func (h WebserviceHandler) ShowAllLocks(res http.ResponseWriter, req *http.Request) {
 	h.logger.Debug("WebserviceHandler.ShowAllLocks - START")

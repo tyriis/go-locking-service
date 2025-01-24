@@ -1,3 +1,4 @@
+// Package infrastructure provides concrete implementations of interfaces defined in domain.
 package infrastructure
 
 import (
@@ -8,10 +9,13 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Logger implements the domain.Logger interface using zerolog.
 type Logger struct {
 	logger zerolog.Logger
 }
 
+// NewLogger creates a new Logger instance configured based on environment variables.
+// It uses LOG_FORMAT to determine the output format (console or json).
 func NewLogger() *Logger {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	format := os.Getenv("LOG_FORMAT")

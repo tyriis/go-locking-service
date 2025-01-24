@@ -1,3 +1,4 @@
+// Package usecases implements the application's business logic.
 package usecases
 
 import (
@@ -8,11 +9,13 @@ import (
 	"github.com/tyriis/rest-go/internal/domain"
 )
 
+// LockUseCase handles the business logic for lock management.
 type LockUseCase struct {
 	lockRepo domain.LockRepository
 	logger   domain.Logger
 }
 
+// NewLockUseCase creates a new LockUseCase with the given repository and logger.
 func NewLockUseCase(lockRepo domain.LockRepository, logger domain.Logger) *LockUseCase {
 	return &LockUseCase{
 		lockRepo: lockRepo,
@@ -20,6 +23,7 @@ func NewLockUseCase(lockRepo domain.LockRepository, logger domain.Logger) *LockU
 	}
 }
 
+// CreateLock creates a new lock if it doesn't exist.
 func (uc *LockUseCase) CreateLock(lockInput *domain.LockInput) (*domain.Lock, error) {
 	uc.logger.Debug("LockUseCase.CreateLock - START")
 	// Check if lock exists
@@ -58,6 +62,7 @@ func (uc *LockUseCase) CreateLock(lockInput *domain.LockInput) (*domain.Lock, er
 	return uc.lockRepo.Set(lock.Key, string(lockValue), duration)
 }
 
+// DeleteLock removes an existing lock.
 func (uc *LockUseCase) DeleteLock(key string) error {
 	uc.logger.Debug("LockUseCase.DeleteLock - START")
 	if key == "" {
@@ -75,6 +80,7 @@ func (uc *LockUseCase) DeleteLock(key string) error {
 	return nil
 }
 
+// GetLock retrieves a specific lock by key.
 func (uc *LockUseCase) GetLock(key *string) (*domain.Lock, error) {
 	uc.logger.Debug("LockUseCase.GetLock - START")
 	lock, err := uc.lockRepo.Get(*key)
@@ -86,6 +92,7 @@ func (uc *LockUseCase) GetLock(key *string) (*domain.Lock, error) {
 	return lock[0], nil
 }
 
+// ListLocks retrieves all existing locks.
 func (uc *LockUseCase) ListLocks() ([]*domain.Lock, error) {
 	uc.logger.Debug("LockUseCase.ListLocks - START")
 	locks, err := uc.lockRepo.Get("*")

@@ -1,3 +1,4 @@
+// Package infrastructure provides concrete implementations of interfaces defined in domain.
 package infrastructure
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/tyriis/rest-go/internal/domain"
 )
 
+// RedisHandler implements lock storage using Redis.
 type RedisHandler struct {
 	client *redis.Client
 	ctx    context.Context
@@ -17,6 +19,7 @@ type RedisHandler struct {
 	config Config
 }
 
+// NewRedisHandler creates a new RedisHandler with the given configuration and logger.
 func NewRedisHandler(config Config, logger domain.Logger) *RedisHandler {
 	redisJSON, err := json.Marshal(config.Redis)
 	if err == nil {
@@ -34,10 +37,12 @@ func NewRedisHandler(config Config, logger domain.Logger) *RedisHandler {
 	}
 }
 
+// Set stores a lock with the given key, value, and TTL.
 func (h *RedisHandler) Set(key string, value string, ttl time.Duration) error {
 	return h.client.Set(h.ctx, h.config.Redis.Prefix+key, value, ttl).Err()
 }
 
+// Get retrieves a lock by key. If key is "*", returns all locks.
 func (h *RedisHandler) Get(key string) ([]string, error) {
 	if key == "*" {
 		// Get all keys with prefix
@@ -60,10 +65,12 @@ func (h *RedisHandler) Get(key string) ([]string, error) {
 	return []string{val}, nil
 }
 
+// Del removes a lock by key.
 func (h *RedisHandler) Del(key string) error {
 	return h.client.Del(h.ctx, h.config.Redis.Prefix+key).Err()
 }
 
+// GetMultiple retrieves multiple locks by their keys.
 func (h *RedisHandler) GetMultiple(keys []string) ([]string, error) {
 	h.logger.Debug(fmt.Sprintf("RedisHandler.GetMultiple - keys: %v", keys))
 	// Fetch multiple keys in one call
