@@ -55,9 +55,20 @@ func (h WebserviceHandler) CreateLock(res http.ResponseWriter, req *http.Request
 
 	lock, err := h.LockUseCase.CreateLock(&input)
 	if err != nil {
-		// TODO: distinguish between 500 and 409
-		h.logger.Error(err.Error())
-		http.Error(res, err.Error(), http.StatusConflict)
+		switch e := err.(type) {
+		case *domain.LockConflictError:
+			h.logger.Error(e.Error())
+			http.Error(res, e.Error(), http.StatusConflict)
+		case *domain.InternalError:
+			h.logger.Error(e.Error())
+			http.Error(res, e.Error(), http.StatusInternalServerError)
+		case *domain.InputError:
+			h.logger.Error(e.Error())
+			http.Error(res, e.Error(), http.StatusBadRequest)
+		default:
+			h.logger.Error(err.Error())
+			http.Error(res, "unexpected error", http.StatusInternalServerError)
+		}
 		return
 	}
 
