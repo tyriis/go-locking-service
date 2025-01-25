@@ -16,11 +16,11 @@ type RedisHandler struct {
 	client *redis.Client
 	ctx    context.Context
 	logger domain.Logger
-	config Config
+	config domain.Config
 }
 
 // NewRedisHandler creates a new RedisHandler with the given configuration and logger.
-func NewRedisHandler(config Config, logger domain.Logger) *RedisHandler {
+func NewRedisHandler(config domain.Config, logger domain.Logger) *RedisHandler {
 	redisJSON, err := json.Marshal(config.Redis)
 	if err == nil {
 		const msg = "NewRedisHandler - json.Marshal > config.Redis > %s"
@@ -39,14 +39,24 @@ func NewRedisHandler(config Config, logger domain.Logger) *RedisHandler {
 
 // Set stores a lock with the given key, value, and TTL.
 func (h *RedisHandler) Set(key string, value string, ttl time.Duration) error {
+	if h.Ping() != nil {
+		return fmt.Errorf("failed to connect to Redis")
+	}
 	return h.client.Set(h.ctx, h.config.Redis.Prefix+key, value, ttl).Err()
 }
 
 // Get retrieves a lock by key. If key is "*", returns all locks.
 func (h *RedisHandler) Get(key string) ([]string, error) {
+	if h.Ping() != nil {
+		return nil, fmt.Errorf("failed to connect to Redis")
+	}
 	if key == "*" {
 		// Get all keys with prefix
-		keys := h.client.Keys(h.ctx, h.config.Redis.Prefix+"*").Val()
+		cmd := h.client.Keys(h.ctx, h.config.Redis.Prefix+"*")
+		if cmd.Err() != nil {
+			return nil, cmd.Err()
+		}
+		keys := cmd.Val()
 		if len(keys) == 0 {
 			return []string{}, nil
 		}
@@ -67,6 +77,9 @@ func (h *RedisHandler) Get(key string) ([]string, error) {
 
 // Del removes a lock by key.
 func (h *RedisHandler) Del(key string) error {
+	if h.Ping() != nil {
+		return fmt.Errorf("failed to connect to Redis")
+	}
 	return h.client.Del(h.ctx, h.config.Redis.Prefix+key).Err()
 }
 
@@ -89,4 +102,9 @@ func (h *RedisHandler) GetMultiple(keys []string) ([]string, error) {
 
 	h.logger.Debug(fmt.Sprintf("RedisHandler.GetMultiple - values: %v", values))
 	return values, nil
+}
+
+// Ping checks if the Redis server is accessible.
+func (h *RedisHandler) Ping() error {
+	return h.client.Ping(h.ctx).Err()
 }

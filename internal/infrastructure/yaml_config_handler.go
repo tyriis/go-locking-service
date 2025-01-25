@@ -3,35 +3,18 @@ package infrastructure
 import (
 	"fmt"
 	"os"
-	"sync"
 
-	"github.com/rs/zerolog/log"
 	"github.com/tyriis/rest-go/internal/domain"
 	"gopkg.in/yaml.v3"
-)
-
-type Config struct {
-	Redis struct {
-		Host   string `yaml:"host"`
-		Port   string `yaml:"port"`
-		Prefix string `yaml:"keyPrefix"`
-	} `yaml:"redis"`
-	Api struct {
-		Port string `yaml:"port"`
-	} `yaml:"api"`
-}
-
-var (
-	config *Config
-	once   sync.Once
 )
 
 type YAMLConfigHandler struct {
 	path      string
 	validator domain.ConfigValidator
-	logger    *Logger
+	logger    domain.Logger
 }
 
+// NewYAMLConfigHandler creates a new YAMLConfigHandler with the given path, validator, and logger.
 func NewYAMLConfigHandler(path string, validator domain.ConfigValidator, logger *Logger) *YAMLConfigHandler {
 	return &YAMLConfigHandler{
 		path:      path,
@@ -40,29 +23,37 @@ func NewYAMLConfigHandler(path string, validator domain.ConfigValidator, logger 
 	}
 }
 
-func (h *YAMLConfigHandler) Load() (*Config, error) {
+// Load reads the YAML file and returns the Config struct.
+func (h *YAMLConfigHandler) Load() (*domain.Config, error) {
 	// Retrieve the raw YAML data
 	data, err := os.ReadFile(h.path)
 	if err != nil {
 		const msg = "YAMLConfigHandler.Load - os.ReadFile > %w"
-		log.Error().Msg(fmt.Errorf(msg, err).Error())
+		h.logger.Error(fmt.Errorf(msg, err).Error())
 		return nil, fmt.Errorf(msg, err)
 	}
 
 	// Unmarshal the YAML data to detect malformed YAML
 	var rawData interface{}
 	err = yaml.Unmarshal(data, &rawData)
+	if err != nil {
+		const msg = "YAMLConfigHandler.Load - yaml.Unmarshal > %w"
+		h.logger.Error(fmt.Errorf(msg, err).Error())
+		return nil, err
+	}
 
 	// Validate the raw data
 	if err := h.validator.Validate(rawData); err != nil {
 		const msg = "YAMLConfigHandler.Load - h.validator.Validate > %w"
-		log.Error().Msg(fmt.Errorf(msg, err).Error())
+		h.logger.Error(fmt.Errorf(msg, err).Error())
 		return nil, err
 	}
 
 	// Unmarshal the YAML data to the Config struct
-	config := &Config{}
+	config := &domain.Config{}
 	if err := yaml.Unmarshal(data, config); err != nil {
+		const msg = "YAMLConfigHandler.Load - yaml.Unmarshal > %w"
+		h.logger.Error(fmt.Errorf(msg, err).Error())
 		return nil, err
 	}
 

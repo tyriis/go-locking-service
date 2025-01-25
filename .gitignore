@@ -22,5 +22,7 @@
 !.editorconfig
 !assets/**
 
+!Dockerfile
+
 # ...even if they are in subdirectories
 !*/

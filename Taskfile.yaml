@@ -25,3 +25,4 @@ includes:
   install: .taskfiles/install/Taskfile.yaml
   lint: .taskfiles/lint/Taskfile.yaml
   run: .taskfiles/run/Taskfile.yaml
+  docker: .taskfiles/docker/Taskfile.yaml
