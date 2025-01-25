@@ -2,12 +2,15 @@ package infrastructure
 
 import (
 	"bytes"
+	"embed"
 	"encoding/json"
-	"os"
 
 	"github.com/santhosh-tekuri/jsonschema/v6"
 	"github.com/tyriis/rest-go/internal/domain"
 )
+
+//go:embed assets/schemas/*
+var assetsFS embed.FS
 
 type JSONSchemaValidator struct {
 	schemaPath string
@@ -28,18 +31,26 @@ func (v *JSONSchemaValidator) Validate(data interface{}) error {
 		return err
 	}
 
-	// Load and compile schema
-	schemaData, err := os.ReadFile(v.schemaPath)
+	// Read schema
+	schemaData, err := assetsFS.ReadFile(v.schemaPath)
 	if err != nil {
 		return err
 	}
 
-	compiler := jsonschema.NewCompiler()
-	if err := compiler.AddResource("schema.json", bytes.NewReader(schemaData)); err != nil {
+	// Unmarshal schema
+	configSchema, err := jsonschema.UnmarshalJSON(bytes.NewReader(schemaData))
+	if err != nil {
 		return err
 	}
 
-	schema, err := compiler.Compile(v.schemaPath)
+	// Compile schema
+	compiler := jsonschema.NewCompiler()
+	if err := compiler.AddResource("schema.json", configSchema); err != nil {
+		return err
+	}
+
+	// Compile schema
+	schema, err := compiler.Compile("schema.json")
 	if err != nil {
 		return err
 	}

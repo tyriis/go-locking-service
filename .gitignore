@@ -20,7 +20,7 @@
 !Taskfile.yaml
 
 !.editorconfig
-!assets/**
+!internal/infrastructure/assets/**
 
 !Dockerfile
 
