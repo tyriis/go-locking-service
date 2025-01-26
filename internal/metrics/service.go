@@ -23,6 +23,7 @@ type PrometheusMetricsService struct {
 	httpRequestCounter  *prometheus.CounterVec
 	userActionCounter   *prometheus.CounterVec
 	errorCounter        *prometheus.CounterVec
+	locksCounter        prometheus.Gauge
 }
 
 func NewPrometheusMetricsService() *PrometheusMetricsService {
@@ -47,6 +48,11 @@ func NewPrometheusMetricsService() *PrometheusMetricsService {
 			Name: "error_count_total",
 			Help: "Total number of errors",
 		}, []string{"error_type"}),
+
+		locksCounter: promauto.NewGauge(prometheus.GaugeOpts{
+			Name: "locks_total",
+			Help: "The total number of active locks",
+		}),
 	}
 }
 
@@ -63,4 +69,8 @@ func (m *PrometheusMetricsService) RecordUserAction(action string) {
 
 func (m *PrometheusMetricsService) IncrementErrorCount(errorType string) {
 	m.errorCounter.WithLabelValues(errorType).Inc()
+}
+
+func (m *PrometheusMetricsService) SetLockCount(value float64) {
+	m.locksCounter.Set(value)
 }

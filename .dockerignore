@@ -1,0 +1,20 @@
+# Ignore everything by default
+*
+
+# Explicitly include necessary files and directories
+!go.mod
+!go.sum
+!assets/
+!cmd/
+!internal/
+!pkg/
+!*.go
+!README.md
+
+# Still ignore certain patterns within included directories
+**/.git
+**/.gitignore
+**/*_test.go
+**/*.test
+**/tmp/
+**/build/

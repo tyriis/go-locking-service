@@ -23,6 +23,7 @@
 !internal/infrastructure/assets/**
 
 !Dockerfile
+!.dockerignore
 
 # ...even if they are in subdirectories
 !*/

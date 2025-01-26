@@ -5,4 +5,5 @@ type MetricsRecorder interface {
 	ObserveHTTPRequest(method, path string, statusCode int, duration float64)
 	RecordUserAction(action string)
 	IncrementErrorCount(errorType string)
+	SetLockCount(value float64)
 }

@@ -70,7 +70,12 @@ func (h *RedisHandler) Get(key string) ([]string, error) {
 	}
 	val, err := h.client.Get(h.ctx, h.config.Redis.Prefix+key).Result()
 	if err != nil {
-		return nil, err
+		switch err {
+		case redis.Nil:
+			return nil, nil
+		default:
+			return nil, err
+		}
 	}
 	return []string{val}, nil
 }
@@ -107,4 +112,31 @@ func (h *RedisHandler) GetMultiple(keys []string) ([]string, error) {
 // Ping checks if the Redis server is accessible.
 func (h *RedisHandler) Ping() error {
 	return h.client.Ping(h.ctx).Err()
+}
+
+func (h *RedisHandler) Close() error {
+	return h.client.Close()
+}
+
+// Count returns the number of locks stored in Redis.
+func (h *RedisHandler) Count() (int, error) {
+	var cursor uint64
+	var count int
+
+	for {
+		var keys []string
+		var err error
+		keys, cursor, err = h.client.Scan(context.Background(), cursor, h.config.Redis.Prefix+"*", 1000).Result()
+		if err != nil {
+			return 0, err
+		}
+
+		count += len(keys)
+
+		if cursor == 0 {
+			break
+		}
+	}
+
+	return count, nil
 }

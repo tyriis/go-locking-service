@@ -111,8 +111,3 @@ func (h WebserviceHandler) handleError(res http.ResponseWriter, err error) {
 		h.respondWithError(res, http.StatusInternalServerError, "An unexpected error occurred")
 	}
 }
-
-func (h WebserviceHandler) Metrics(res http.ResponseWriter, req *http.Request) {
-	h.logger.Debug("WebserviceHandler.Metrics - START")
-
-}

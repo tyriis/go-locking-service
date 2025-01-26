@@ -12,6 +12,7 @@ type KVStoreHandler interface {
 	Get(key string) ([]string, error)
 	Set(key string, value string, expiration time.Duration) error
 	Del(key string) error
+	Count() (int, error)
 }
 
 type LockRepository struct {
@@ -32,6 +33,11 @@ func (repo *LockRepository) Get(key string) ([]*domain.Lock, error) {
 	if err != nil {
 		const msg = "LockRepository.Get - repo.handler.Get > %w"
 		return nil, fmt.Errorf(msg, err)
+	}
+
+	// not found
+	if result == nil {
+		return nil, nil
 	}
 
 	if len(result) != 1 && key != "*" {
@@ -81,4 +87,14 @@ func (repo *LockRepository) Del(key string) error {
 	}
 	repo.logger.Debug(fmt.Sprintf("LockRepository.Del(%s) - END", key))
 	return nil
+}
+
+func (repo *LockRepository) Count() (int, error) {
+	repo.logger.Debug("LockRepository.Count - START")
+	count, err := repo.handler.Count()
+	if err != nil {
+		return 0, err
+	}
+	repo.logger.Debug("LockRepository.Count - END")
+	return count, nil
 }
