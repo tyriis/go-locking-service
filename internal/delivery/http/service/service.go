@@ -2,8 +2,8 @@
 package service
 
 import (
-	"github.com/tyriis/rest-go/internal/domain"
-	"github.com/tyriis/rest-go/internal/usecases"
+	"github.com/tyriis/go-locking-service/internal/domain"
+	"github.com/tyriis/go-locking-service/internal/usecases"
 )
 
 // WebserviceHandler handles HTTP requests for the lock management API.

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/tyriis/rest-go/pkg/metrics"
+	"github.com/tyriis/go-locking-service/pkg/metrics"
 )
 
 type MetricsMiddleware struct {

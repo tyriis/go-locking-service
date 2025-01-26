@@ -7,7 +7,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/tyriis/rest-go/internal/domain"
+	"github.com/tyriis/go-locking-service/internal/domain"
 )
 
 // Logger implements the domain.Logger interface using zerolog.

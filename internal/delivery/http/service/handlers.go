@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/tyriis/rest-go/internal/domain"
+	"github.com/tyriis/go-locking-service/internal/domain"
 )
 
 // respondWithJSON writes a JSON response with proper indentation.

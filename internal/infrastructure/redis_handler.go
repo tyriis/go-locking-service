@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/tyriis/rest-go/internal/domain"
+	"github.com/tyriis/go-locking-service/internal/domain"
 )
 
 // RedisHandler implements lock storage using Redis.

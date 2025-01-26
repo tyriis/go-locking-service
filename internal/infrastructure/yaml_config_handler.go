@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/tyriis/rest-go/internal/domain"
+	"github.com/tyriis/go-locking-service/internal/domain"
 	"gopkg.in/yaml.v3"
 )
 

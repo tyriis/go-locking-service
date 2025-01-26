@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tyriis/rest-go/internal/domain"
+	"github.com/tyriis/go-locking-service/internal/domain"
 )
 
 // LockUseCase handles the business logic for lock management.

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 
 	"github.com/santhosh-tekuri/jsonschema/v6"
-	"github.com/tyriis/rest-go/internal/domain"
+	"github.com/tyriis/go-locking-service/internal/domain"
 )
 
 //go:embed assets/schemas/*

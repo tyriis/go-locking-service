@@ -10,11 +10,11 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	delivery "github.com/tyriis/rest-go/internal/delivery/http/service"
-	"github.com/tyriis/rest-go/internal/infrastructure"
-	"github.com/tyriis/rest-go/internal/metrics"
-	"github.com/tyriis/rest-go/internal/repositories"
-	"github.com/tyriis/rest-go/internal/usecases"
+	delivery "github.com/tyriis/go-locking-service/internal/delivery/http/service"
+	"github.com/tyriis/go-locking-service/internal/infrastructure"
+	"github.com/tyriis/go-locking-service/internal/metrics"
+	"github.com/tyriis/go-locking-service/internal/repositories"
+	"github.com/tyriis/go-locking-service/internal/usecases"
 )
 
 func main() {

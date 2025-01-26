@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tyriis/rest-go/internal/domain"
-	"github.com/tyriis/rest-go/internal/repositories"
+	"github.com/tyriis/go-locking-service/internal/domain"
+	"github.com/tyriis/go-locking-service/internal/repositories"
 )
 
 type MetricsUpdater struct {
