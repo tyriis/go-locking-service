@@ -10,8 +10,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/tyriis/rest-go/internal/delivery"
+	delivery "github.com/tyriis/rest-go/internal/delivery/http/service"
 	"github.com/tyriis/rest-go/internal/infrastructure"
+	"github.com/tyriis/rest-go/internal/metrics"
 	"github.com/tyriis/rest-go/internal/repositories"
 	"github.com/tyriis/rest-go/internal/usecases"
 )
@@ -38,15 +39,24 @@ func main() {
 	// initialize http handler
 	webserviceHandler := delivery.NewWebserviceHandler(lockUseCase, logger)
 
+	metricsService := metrics.NewPrometheusMetricsService()
+
+	// initialize metrics middleware
+	metricsMiddleware := metrics.NewMetricsMiddleware(metricsService)
+
 	r := mux.NewRouter()
-	r.HandleFunc("/api/v1/locks", webserviceHandler.CreateLock).Methods("POST")
-	r.HandleFunc("/api/v1/locks/{key}", webserviceHandler.DeleteLock).Methods("DELETE")
-	r.HandleFunc("/api/v1/locks/{key}", webserviceHandler.ShowOneLock).Methods("GET")
-	r.HandleFunc("/api/v1/locks", webserviceHandler.ShowAllLocks).Methods("GET")
-	log.Printf("Server is running on port %s", config.Api.Port)
+
+	// Apply metrics middleware to all routes
+	r.Handle("/metrics", infrastructure.MetricsHandler())
+	r.Handle("/api/v1/locks", metricsMiddleware.Middleware(http.HandlerFunc(webserviceHandler.CreateLock))).Methods("POST")
+	r.Handle("/api/v1/locks/{key}", metricsMiddleware.Middleware(http.HandlerFunc(webserviceHandler.DeleteLock))).Methods("DELETE")
+	r.Handle("/api/v1/locks/{key}", metricsMiddleware.Middleware(http.HandlerFunc(webserviceHandler.ShowOneLock))).Methods("GET")
+	r.Handle("/api/v1/locks", metricsMiddleware.Middleware(http.HandlerFunc(webserviceHandler.ShowAllLocks))).Methods("GET")
+
+	logger.Info("Server is running on http://" + config.Api.Host + ":" + config.Api.Port)
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", config.Api.Port),
+		Addr:    fmt.Sprintf("%s:%s", config.Api.Host, config.Api.Port),
 		Handler: r,
 	}
 

@@ -1,5 +1,5 @@
 // Package delivery implements the HTTP handlers for the REST API.
-package delivery
+package service
 
 import (
 	"encoding/json"
@@ -7,22 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/tyriis/rest-go/internal/domain"
-	"github.com/tyriis/rest-go/internal/usecases"
 )
-
-// WebserviceHandler handles HTTP requests for the lock management API.
-type WebserviceHandler struct {
-	LockUseCase *usecases.LockUseCase
-	logger      domain.Logger
-}
-
-// NewWebserviceHandler creates a new WebserviceHandler with the given use case and logger.
-func NewWebserviceHandler(lockUseCase *usecases.LockUseCase, logger domain.Logger) *WebserviceHandler {
-	return &WebserviceHandler{
-		LockUseCase: lockUseCase,
-		logger:      logger,
-	}
-}
 
 // respondWithJSON writes a JSON response with proper indentation.
 func (h WebserviceHandler) respondWithJSON(res http.ResponseWriter, status int, payload interface{}) {
@@ -125,4 +110,9 @@ func (h WebserviceHandler) handleError(res http.ResponseWriter, err error) {
 	default:
 		h.respondWithError(res, http.StatusInternalServerError, "An unexpected error occurred")
 	}
+}
+
+func (h WebserviceHandler) Metrics(res http.ResponseWriter, req *http.Request) {
+	h.logger.Debug("WebserviceHandler.Metrics - START")
+
 }

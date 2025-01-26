@@ -7,7 +7,7 @@
   "properties": {
     "api": {
       "type": "object",
-      "required": ["port"],
+      "required": ["port", "host"],
       "additionalProperties": false,
       "properties": {
         "port": {
@@ -16,6 +16,11 @@
           "maximum": 65535,
           "default": 8080,
           "description": "The port number the API server will listen on"
+        },
+        "host": {
+          "type": "string",
+          "format": "hostname",
+          "description": "The host the API server will listen on"
         }
       }
     },

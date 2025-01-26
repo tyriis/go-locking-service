@@ -6,3 +6,4 @@
 - [ ] add env substitution to yaml loader
 - [x] add docker build pipeline
 - [ ] add docker compose for development
+- [x] configure prometheus metric export

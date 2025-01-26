@@ -8,5 +8,6 @@ type Config struct {
 	} `yaml:"redis"`
 	Api struct {
 		Port string `yaml:"port"`
+		Host string `yaml:"host"`
 	} `yaml:"api"`
 }
