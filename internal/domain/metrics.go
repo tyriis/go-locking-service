@@ -1,4 +1,4 @@
-package metrics
+package domain
 
 // MetricsRecorder defines the interface for recording metrics
 type MetricsRecorder interface {

@@ -4,14 +4,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/tyriis/go-locking-service/pkg/metrics"
+	"github.com/tyriis/go-locking-service/internal/domain"
 )
 
 type MetricsMiddleware struct {
-	recorder metrics.MetricsRecorder
+	recorder domain.MetricsRecorder
 }
 
-func NewMetricsMiddleware(recorder metrics.MetricsRecorder) *MetricsMiddleware {
+func NewMetricsMiddleware(recorder domain.MetricsRecorder) *MetricsMiddleware {
 	return &MetricsMiddleware{recorder: recorder}
 }
 
