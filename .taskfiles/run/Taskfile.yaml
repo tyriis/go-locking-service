@@ -5,9 +5,41 @@ version: "3"
 tasks:
   default:
     desc: Run the application
+    cmd: task run:app
+
+  app:
+    desc: Run the application
     env:
       LOG_FORMAT: console
       LOG_LEVEL: debug
     cmds:
       # - "go run {{.SOURCE_DIR}}/*.go"
       - "go run {{.PROJECT_DIR}}/cmd/app/main.go"
+
+  test:
+    desc: Run the tests
+    cmds:
+      - "go test -v ./..."
+
+  build:
+    desc: Build the application
+    dir: '{{.PROJECT_DIR}}'
+    env:
+      LOG_FORMAT: console
+      LOG_LEVEL: debug
+    cmds:
+      - mkdir -p {{.BUILD_DIR}}
+      # - "go build -o {{.BUILD_DIR}} {{.SOURCE_DIR}}/*.go"
+      - "go build -o {{.BUILD_DIR}} {{.PROJECT_DIR}}/cmd/app/main.go"
+
+  clean:
+    desc: Clean the build artifacts
+    cmds:
+      - rm -rf {{.BUILD_DIR}}
+
+  install:
+    desc: Install the application
+    cmds:
+      - go mod download
+      - go mod verify
+      - go install {{.PROJECT_DIR}}/cmd/app

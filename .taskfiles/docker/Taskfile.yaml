@@ -5,9 +5,9 @@ tasks:
   build:
     desc: Build docker image
     cmds:
-      - docker build -t rest-go:latest .
+      - docker build -t go-locking-service:latest .
 
   run:
     desc: Run docker container
     cmds:
-      - docker run -p 8080:8080 rest-go:latest
+      - docker run -p 8080:8080 go-locking-service:latest
