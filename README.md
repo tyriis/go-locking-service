@@ -32,7 +32,7 @@ So that I can coordinate access to shared resources across distributed systems.
 ## Installation
 
 ```bash
-task install
+task run:install
 ```
 
 ## Configuration
@@ -47,6 +47,7 @@ You can use env variables as placeholder in the configuration.yaml
 
 ```yaml
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tyriis/go-locking-service/refs/heads/main/internal/infrastructure/assets/schemas/config.json
 app:
   port: 3000
   host: 0.0.0.0
@@ -64,25 +65,21 @@ redis:
 ## Running the app
 
 ```bash
-task run
+task run:app
 
 ```
 
 ## Building the app
 
 ```bash
-task build
+task run:build
 
 ```
 
 ## Test
 
-> *TBD*
-
-## Lint
-
 ```bash
-task lint
+task run:test
 
 ```
 
@@ -92,7 +89,6 @@ task lint
 [pre-commit-url]: https://github.com/pre-commit/pre-commit
 [renovate-shield]: https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovate&logoColor=308BE3
 [renovate-url]: https://www.mend.io/renovate/
-[nestjs-shield]: https://img.shields.io/badge/NestJS-10.4.13-E0234E?logo=nestjs&logoColor=E0234E
-[nestjs-url]: https://nestjs.com/
+logoColor=E0234E
 [go-shield]: https://img.shields.io/badge/Go-1.23.4-00ADD8?logo=go
 [go-url]: https://go.dev/
