@@ -73,7 +73,7 @@ func (h WebserviceHandler) ShowOneLock(res http.ResponseWriter, req *http.Reques
 	h.logger.Debug("WebserviceHandler.ShowOneLock - START")
 	vars := mux.Vars(req)
 	key := vars["key"]
-	lock, err := h.LockUseCase.GetLock(&key)
+	lock, err := h.LockUseCase.GetLock(key)
 	if err != nil {
 		h.handleError(res, err)
 		return

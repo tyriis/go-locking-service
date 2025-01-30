@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "REST-GO Configuration Schema",
+  "title": "go-locking-service Configuration Schema",
   "type": "object",
   "required": ["api", "redis"],
   "additionalProperties": false,

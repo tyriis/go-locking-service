@@ -88,16 +88,16 @@ func (uc *LockUseCase) DeleteLock(key string) error {
 }
 
 // GetLock retrieves a specific lock by key.
-func (uc *LockUseCase) GetLock(key *string) (*domain.Lock, error) {
+func (uc *LockUseCase) GetLock(key string) (*domain.Lock, error) {
 	uc.logger.Debug("LockUseCase.GetLock - START")
-	lock, err := uc.lockRepo.Get(*key)
+	lock, err := uc.lockRepo.Get(key)
 	if err != nil {
 		const msg = "LockUseCase.GetLock - uc.lockRepo.Get > %s"
 		return nil, &domain.InternalError{Message: fmt.Sprintf(msg, err.Error())}
 	}
 	if lock == nil {
 		const msg = "LockUseCase.GetLock - uc.lockRepo.Get(%s) >"
-		return nil, &domain.NotFoundError{Message: fmt.Sprintf(msg, *key)}
+		return nil, &domain.NotFoundError{Message: fmt.Sprintf(msg, key)}
 	}
 	uc.logger.Debug("LockUseCase.GetLock - END")
 	return lock[0], nil
