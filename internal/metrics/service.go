@@ -39,16 +39,6 @@ func NewPrometheusMetricsService() *PrometheusMetricsService {
 			Help: "Total number of HTTP requests",
 		}, []string{"method", "path", "status"}),
 
-		userActionCounter: promauto.NewCounterVec(prometheus.CounterOpts{
-			Name: "user_actions_total",
-			Help: "Total number of user actions",
-		}, []string{"action"}),
-
-		errorCounter: promauto.NewCounterVec(prometheus.CounterOpts{
-			Name: "error_count_total",
-			Help: "Total number of errors",
-		}, []string{"error_type"}),
-
 		locksCounter: promauto.NewGauge(prometheus.GaugeOpts{
 			Name: "locks_total",
 			Help: "The total number of active locks",
