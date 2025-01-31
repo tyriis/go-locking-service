@@ -94,6 +94,5 @@ task run:test
 [pre-commit-url]: https://github.com/pre-commit/pre-commit
 [renovate-shield]: https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovate&logoColor=308BE3
 [renovate-url]: https://www.mend.io/renovate/
-logoColor=E0234E
 [go-shield]: https://img.shields.io/badge/Go-1.23.4-00ADD8?logo=go
 [go-url]: https://go.dev/
