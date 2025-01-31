@@ -83,6 +83,11 @@ task run:test
 
 ```
 
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
+<!-- Links -->
+
 [taskfile-shield]: https://img.shields.io/badge/Taskfile-enabled-brightgreen?logo=task
 [taskfile-url]: https://taskfile.dev/
 [pre-commit-shield]: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
